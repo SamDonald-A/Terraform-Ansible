@@ -15,13 +15,27 @@ You need to provision the following AWS resources using Terraform:
 - 2 Public Subnets
 - 2 Private Subnets
 - 1 Application Load Balancer (ALB) with target groups
-- 1 Auto Scaling Group (ASG) with min/max capacity 2–5
+- 1 Auto Scaling Group (ASG) with min/max capacity 2-5
 
-These resources must be created for 4 environments:
-- dev
-- qa
-- staging
-- prod
+These resources must be created for 4 environments which exists in 4 different AWS accounts:
+- dev env - in AWS Dev account
+- qa env - in AWS QA account
+- staging env - in AWS staging account
+- prod env - in AWS prod account
+
+------
+
+Option 1: We will create the TF files for the above mentioned resources
+
+you will write everything within main.tf / vpc.tf, private-subnet.tf, public-subnet.tf etc...
+You will create a variable.tf file and keep all the variables There
+provider.tf file for connection details to AWS
+
+
+
+
+
+
 
 Key question to think about:
 - Will you create one reusable Terraform codebase with variables, loops and conditions to handle all environments, or separate code per environment?
@@ -114,6 +128,57 @@ no conflict
 
 --------------------------------------------------------------------------
 
+Problem Statement:
+
+Dev1 needs to create the Terraform code for provisioning following resources on AWS:
+- 1 VPC, 2 public subnets, 2 private subnets
+- 1 ALB with target groups
+- 1 ASG with min/max 2-5
+
+Dev1 creates the TF code and executes it from his/her laptop..
+
+The infra is created...
+
+also Dev1 makes sure to checkin the TF code to the git repo, so that same code could be reused by the team members...
+
+-------------
+
+Now there is a new request to change the ASG with min/max 4-8 and Dev1 is busy in P1 issue, so the task is assigned to Dev2..
+
+Dev2 will clone the git repo..
+Change the ASG value in the TF code from 2-5 to 4-8
+and run terraform apply afterwards
+----> this will fail
+----> When Dev2 will try to run "terraform apply", this will not find any terraform.tfstate file inside the Dev2's directory
+----> terraform will consider this as fresh deployment
+----> it will try to create everything again and will conflict and eventually fail
+
+
+How to avoid this:
+
+By using Remote state Management:
+-- you specify a place where the state files are stored inside your terraform code
+-- In AWS: the remote state files are stored inside S3 buckets
+-- IN Azure: they are stored Azure Blobs
+-- IN GCP: GCP Buckets
+
+Jatin's use case:
+
+can we not checkin the terraform.tfstate file as well in the git repo.. the answer is "NO"
+
+Reasons:
+-- This file should not be edited manually at any cost
+-- Even if we commit this file in the git repo, it still does not save us from getting the last applied state:
+  - Dev1 checked in all the TF code with the last applied state file
+  - Dev2 cloned the code, made changes in the code and ran tf apply, it went fine as Dev2 had the last applied state file, so the changes were successful
+  - At the same time Dev1 is back, Dev1 also makes some other changes in the same code but during that time Dev2 has left for the day and forgot to commit the last applied state file and the code
+
+
+
+
+
+
+
 Problem Statement 2 (Remote State & Collaboration):
 ---------------------------------------------------
 
@@ -131,7 +196,7 @@ Dev1 has written Terraform code to provision:
 - A link is created between Dev1’s local Terraform working directory and the remote terraform.tfstate in S3 bucket
 - Then Dev1 runs:
     terraform apply
-- Resources are created in AWS.
+- Resources are created in AWS and the statefile in S3 buckets gets updated immediately
 - Dev1 gets busy and steps away.
 
 Dev2 Steps in to make certain enhancements in the terraform code and further to the actual AWS services
@@ -160,3 +225,5 @@ Things that can happen when multiple developers work on the same terraform code 
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
   }
+
+

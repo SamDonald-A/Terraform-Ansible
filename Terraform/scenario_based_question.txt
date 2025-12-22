@@ -1,0 +1,23 @@
+1.) You need to manage Dev, QA, and Prod across multiple AWS accounts with strict isolation.
+How would you structure Terraform code, state backends, and providers?
+What would you explicitly avoid (and why)?
+
+2.) A teammate accidentally ran terraform apply in the wrong environment and caused an outage.
+How would you:
+Recover from this situation?
+Prevent it from happening again?
+
+3.) You inherit a Terraform repo where every module defines its own AWS provider with region and profile.
+What problems can this cause, and how would you refactor it safely?
+
+4.) Someone manually changed an AWS security group rule in the console.
+Terraform now shows unexpected changes.
+How do you:
+Detect drift?
+Decide whether to accept or override it?
+
+5.) A Terraform plan includes database passwords.
+How would you redesign this so that:
+Secrets are not stored in state
+CI/CD pipelines remain automated
+

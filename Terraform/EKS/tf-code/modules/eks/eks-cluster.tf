@@ -12,10 +12,14 @@ resource "aws_iam_openid_connect_provider" "eks" {
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
 
+locals {
+  eks_version = "1.33"
+  common_prefix = "${var.account}-${var.environment}"
+}
 
 resource "aws_eks_cluster" "this" {
-  name    = var.cluster_name
-  version = var.cluster_version
+  name    = "${var.cluster_name}-${local.common_prefix}"
+  version = local.eks_version
 
   role_arn = aws_iam_role.eks_cluster_role.arn
 
