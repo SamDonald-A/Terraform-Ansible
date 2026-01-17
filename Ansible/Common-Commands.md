@@ -30,7 +30,7 @@ ansible-playbook -i inventory playbook.yml --tags redhat
 
 ansible-playbook -i inventory playbook.yml --check
 
-
+ansible-galaxy init nginx
 
 ---------------------------
 

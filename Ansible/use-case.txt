@@ -1,0 +1,7 @@
+https://docs.ansible.com/projects/ansible/2.9/modules/list_of_all_modules.html
+1.) Pick a module from the url above and write a new task inside the tasks folder
+2.) add a dynamic nginx.conf file with vhost settings into the template folder and configure its variables via inventory file
+3.) Add a tasks with "when" condition that only runs when there is a Boolean defined with "true"
+4.) add a new role for java installation with variables and pass the role in the playbook file
+5.) https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_vars_facts.html 
+explore the gather facts page and try incorporating some gather facts into your task or templates
