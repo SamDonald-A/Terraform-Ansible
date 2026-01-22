@@ -38,3 +38,13 @@ variable "aws_lbc_role_name" {
   description = "AWS Load Balancer controller Role Name"
   type        = string
 }
+
+variable "account" {
+  description = "Account or project name"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name (dev, uat, prod)"
+  type        = string
+}
