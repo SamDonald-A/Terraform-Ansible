@@ -80,7 +80,11 @@ resource "aws_eks_addon" "kube-proxy" {
 }
 
 resource "aws_ec2_tag" "subnet_for_aws_lbc" {
-  for_each    = toset(var.subnet_ids)
+  for_each = {
+    for idx, subnet_id in var.subnet_ids :
+    idx => subnet_id
+  }
+
   resource_id = each.value
   key         = "kubernetes.io/role/elb"
   value       = "1"
